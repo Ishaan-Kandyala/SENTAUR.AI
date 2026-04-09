@@ -1,0 +1,153 @@
+/* Layout */
+.layout {
+    display: flex;
+    height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* Light & Dark Mode Variables */
+:root {
+    --bg: #f5f5f5;
+    --text: #222;
+    --bubble-user: #4a6cf7;
+    --bubble-bot: #eaeaea;
+    --sidebar-bg: rgba(255,255,255,0.25);
+}
+
+body.dark {
+    --bg: #1e1e1e;
+    --text: #f5f5f5;
+    --bubble-user: #6d8bff;
+    --bubble-bot: #333;
+    --sidebar-bg: rgba(0,0,0,0.25);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    border-right: 1px solid rgba(255,255,255,0.2);
+    overflow-y: auto;
+}
+
+.sidebar h3 {
+    margin-bottom: 15px;
+}
+
+.history-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Chat Area */
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+/* Top Bar */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.top-buttons button,
+.top-buttons a {
+    margin-left: 10px;
+}
+
+/* Chatbox */
+.chatbox {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Message Rows */
+.msg-row {
+    display: flex;
+    align-items: flex-end;
+    margin: 12px 0;
+    animation: fadeIn 0.25s ease;
+}
+
+.msg-row.user {
+    justify-content: flex-end;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    margin: 0 10px;
+}
+
+/* Bubbles */
+.bubble {
+    padding: 12px 16px;
+    border-radius: 14px;
+    max-width: 70%;
+    font-size: 15px;
+}
+
+.user .bubble {
+    background: var(--bubble-user);
+    color: white;
+}
+
+.bot .bubble {
+    background: var(--bubble-bot);
+    color: var(--text);
+}
+
+/* Timestamp */
+.timestamp {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-top: 4px;
+}
+
+/* Typing Indicator */
+.typing {
+    display: none;
+    margin: 10px 0;
+    opacity: 0.7;
+}
+
+/* Input Row */
+.input-row {
+    display: flex;
+    margin-top: 10px;
+}
+
+.input-row input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    margin-right: 10px;
+}
+
+.input-row button {
+    padding: 12px 20px;
+    border-radius: 10px;
+    background: #4a6cf7;
+    color: white;
+    border: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(6px);}
+    to {opacity: 1; transform: translateY(0);}
+}
