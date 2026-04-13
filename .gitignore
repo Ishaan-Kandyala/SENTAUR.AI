@@ -1,0 +1,6 @@
+echo ".env
+.venv
+__pycache__
+*.db
+*.pyc
+ngrok.exe" > .gitignore
