@@ -2,6 +2,16 @@ const SERVERCODE = "";
 
 const API = "";
 
+// Handle OAuth redirect token
+(function() {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    if (token) {
+        localStorage.setItem("token", token);
+        window.location = "chat.html";
+    }
+})();
+
 function getToken() {
     return localStorage.getItem("token");
 }
@@ -73,6 +83,21 @@ async function sendMessage() {
     } else {
         addMessage("bot", "Auth error. Please log in again.");
     }
+}
+
+function logout() {
+    localStorage.removeItem("token");
+    window.location = "login.html";
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+}
+
+// Restore dark mode preference
+if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark");
 }
 
 function addMessage(sender, text) {

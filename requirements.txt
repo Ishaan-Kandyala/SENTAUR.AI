@@ -12,3 +12,6 @@ python-multipart
 PyJWT
 pydantic
 sqlalchemy
+authlib
+httpx
+itsdangerous

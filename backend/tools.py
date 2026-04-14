@@ -25,7 +25,7 @@ def get_weather_summary():
         temp = data["main"]["temp"]
         desc = data["weather"][0]["description"].title()
         return f"The weather in {city} is {temp}°C with {desc}."
-    except:
+    except Exception:
         return "I couldn't fetch the weather right now."
 
 
@@ -132,12 +132,15 @@ def add_calendar_event(db: Session, user, title: str, date: datetime):
 
 
 def get_todays_events(db: Session, user):
+    from datetime import timedelta
     today = datetime.utcnow().date()
+    start = datetime(today.year, today.month, today.day)
+    end = start + timedelta(days=1)
     events = (
         db.query(CalendarEvent)
         .filter(CalendarEvent.user_id == user.id)
-        .filter(CalendarEvent.date >= datetime(today.year, today.month, today.day))
-        .filter(CalendarEvent.date < datetime(today.year, today.month, today.day + 1))
+        .filter(CalendarEvent.date >= start)
+        .filter(CalendarEvent.date < end)
         .all()
     )
 

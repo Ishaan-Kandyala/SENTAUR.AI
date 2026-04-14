@@ -1,23 +1,20 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from backend.database import Users
-from backend.weather import get_weather, outfit_for
-from backend.emailer import send_email
+from .database import SessionLocal
+from .models import User
+from .tools import send_email, get_weather_summary
 
 def send_daily_updates():
-    for user in Users.select():
-        weather = get_weather(user.city)
-        temp = weather["main"]["temp"]
-        outfit = outfit_for(temp)
-
-        body = f"""
-Good morning!
-
-Today's temperature in {user.city}: {temp}°C
-Suggested outfit: {outfit}
-
-Have a great day!
-"""
-        send_email(user.email, "Your Daily Weather & Outfit", body)
+    db = SessionLocal()
+    try:
+        users = db.query(User).all()
+        for user in users:
+            weather = get_weather_summary()
+            body = f"Good morning!\n\n{weather}\n\nHave a great day!"
+            send_email(user.email, "Your Daily Sentaur Briefing", body)
+    except Exception as e:
+        print("Scheduler error:", e)
+    finally:
+        db.close()
 
 def start_scheduler():
     scheduler = BackgroundScheduler()

@@ -17,6 +17,8 @@ class User(Base):
     # Relationships
     conversations = relationship("ConversationTurn", back_populates="user")
     reminders = relationship("Reminder", back_populates="user")
+    todos = relationship("Todo", back_populates="user")
+    calendar_events = relationship("CalendarEvent", back_populates="user")
 
 
 # -----------------------------
@@ -55,7 +57,8 @@ class Todo(Base):
     text = Column(Text, nullable=False)
     done = Column(Boolean, default=False)
 
-    user = relationship("User")
+    user = relationship("User", back_populates="todos")
+
 class CalendarEvent(Base):
     __tablename__ = "calendar_events"
 
@@ -64,4 +67,4 @@ class CalendarEvent(Base):
     title = Column(String, nullable=False)
     date = Column(DateTime, nullable=False)
 
-    user = relationship("User")
+    user = relationship("User", back_populates="calendar_events")

@@ -1,15 +1,43 @@
 import os
 from datetime import datetime, timedelta
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from passlib.context import CryptContext
 import jwt
 from sqlalchemy.orm import Session
 from .database import get_db
 from .models import User
+from authlib.integrations.starlette_client import OAuth
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+# OAuth setup
+oauth = OAuth()
+
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+MICROSOFT_CLIENT_ID = os.getenv("MICROSOFT_CLIENT_ID")
+MICROSOFT_CLIENT_SECRET = os.getenv("MICROSOFT_CLIENT_SECRET")
+
+if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
+    oauth.register(
+        name="google",
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+        server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+        client_kwargs={"scope": "openid email profile"},
+    )
+
+if MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET:
+    oauth.register(
+        name="microsoft",
+        client_id=MICROSOFT_CLIENT_ID,
+        client_secret=MICROSOFT_CLIENT_SECRET,
+        server_metadata_url="https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration",
+        client_kwargs={"scope": "openid email profile"},
+    )
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -68,3 +96,42 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
     return user
+
+def get_or_create_oauth_user(db: Session, email: str) -> str:
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        user = User(email=email, password_hash="")
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    return create_access_token({"sub": str(user.id)})
+
+# Google OAuth
+@router.get("/google")
+async def google_login(request: Request):
+    if not GOOGLE_CLIENT_ID:
+        raise HTTPException(status_code=400, detail="Google OAuth not configured")
+    redirect_uri = str(request.url_for("google_callback"))
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+@router.get("/google/callback", name="google_callback")
+async def google_callback(request: Request, db: Session = Depends(get_db)):
+    token = await oauth.google.authorize_access_token(request)
+    email = token["userinfo"]["email"]
+    access_token = get_or_create_oauth_user(db, email)
+    return RedirectResponse(url=f"/chat.html?token={access_token}")
+
+# Microsoft OAuth
+@router.get("/microsoft")
+async def microsoft_login(request: Request):
+    if not MICROSOFT_CLIENT_ID:
+        raise HTTPException(status_code=400, detail="Microsoft OAuth not configured")
+    redirect_uri = str(request.url_for("microsoft_callback"))
+    return await oauth.microsoft.authorize_redirect(request, redirect_uri)
+
+@router.get("/microsoft/callback", name="microsoft_callback")
+async def microsoft_callback(request: Request, db: Session = Depends(get_db)):
+    token = await oauth.microsoft.authorize_access_token(request)
+    email = token["userinfo"]["email"]
+    access_token = get_or_create_oauth_user(db, email)
+    return RedirectResponse(url=f"/chat.html?token={access_token}")

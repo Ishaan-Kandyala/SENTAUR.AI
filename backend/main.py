@@ -13,6 +13,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
@@ -28,6 +29,9 @@ Base.metadata.create_all(bind=engine)
 
 # FastAPI app
 app = FastAPI()
+
+# Session middleware (required for OAuth)
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "dev-secret"))
 
 # CORS
 app.add_middleware(
