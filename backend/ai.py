@@ -28,12 +28,12 @@ from .providers.local_provider import LocalProvider
 # Provider fallback chain — tries each in order until one succeeds
 PROVIDERS = [
     GeminiProvider(),
-    GroqProvider(),
-    CerebrasProvider(),
-    MistralProvider(),
+    DeepSeekProvider(),
     NvidiaProvider(),
     TogetherProvider(),
-    DeepSeekProvider(),
+    MistralProvider(),
+    CerebrasProvider(),
+    GroqProvider(),
     LocalProvider(),
 ]
 
