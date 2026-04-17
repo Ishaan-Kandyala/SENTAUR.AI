@@ -1,6 +1,7 @@
 fastapi
 uvicorn
 passlib[bcrypt]
+bcrypt==4.0.1
 python-dotenv
 apscheduler
 requests
