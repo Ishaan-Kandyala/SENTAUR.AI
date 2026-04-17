@@ -19,8 +19,6 @@ from .tools import (
 from .providers.groq_provider import GroqProvider
 from .providers.cerebras_provider import CerebrasProvider
 from .providers.gemini_provider import GeminiProvider
-from .providers.mistral_provider import MistralProvider
-from .providers.nvidia_provider import NvidiaProvider
 from .providers.together_provider import TogetherProvider
 from .providers.deepseek_provider import DeepSeekProvider
 from .providers.local_provider import LocalProvider
@@ -29,9 +27,7 @@ from .providers.local_provider import LocalProvider
 PROVIDERS = [
     GeminiProvider(),
     DeepSeekProvider(),
-    NvidiaProvider(),
     TogetherProvider(),
-    MistralProvider(),
     CerebrasProvider(),
     GroqProvider(),
     LocalProvider(),
