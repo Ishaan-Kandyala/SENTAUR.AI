@@ -23,19 +23,17 @@ from .providers.mistral_provider import MistralProvider
 from .providers.nvidia_provider import NvidiaProvider
 from .providers.together_provider import TogetherProvider
 from .providers.deepseek_provider import DeepSeekProvider
-from .providers.openai_provider import OpenAIProvider
 from .providers.local_provider import LocalProvider
 
 # Provider fallback chain — tries each in order until one succeeds
 PROVIDERS = [
+    GeminiProvider(),
     GroqProvider(),
     CerebrasProvider(),
-    GeminiProvider(),
     MistralProvider(),
     NvidiaProvider(),
     TogetherProvider(),
     DeepSeekProvider(),
-    OpenAIProvider(),
     LocalProvider(),
 ]
 

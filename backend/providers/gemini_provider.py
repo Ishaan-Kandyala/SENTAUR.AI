@@ -7,7 +7,7 @@ load_dotenv()
 class GeminiProvider:
     def __init__(self):
         self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-        self.model = "models/gemini-2.5-flash"
+        self.model = "gemini-2.5-flash-preview-04-17"
 
     def chat(self, messages):
         try:
