@@ -1,16 +1,22 @@
 import smtplib
-from email.mime.text import MIMEText
 import os
-
-EMAIL = os.getenv("EMAIL_ADDRESS")
-APP_PASSWORD = os.getenv("EMAIL_APP_PASSWORD")
+from email.mime.text import MIMEText
 
 def send_email(to, subject, body):
+    host = os.getenv("SMTP_HOST", "smtp.office365.com")
+    port = int(os.getenv("SMTP_PORT", 587))
+    user = os.getenv("SMTP_USER")
+    password = os.getenv("SMTP_PASS")
+
     msg = MIMEText(body)
-    msg["From"] = EMAIL
+    msg["From"] = user
     msg["To"] = to
     msg["Subject"] = subject
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(EMAIL, APP_PASSWORD)
-        server.send_message(msg)
+    try:
+        with smtplib.SMTP(host, port) as server:
+            server.starttls()
+            server.login(user, password)
+            server.send_message(msg)
+    except Exception as e:
+        print("Email error:", e)
