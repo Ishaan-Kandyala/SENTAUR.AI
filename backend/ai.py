@@ -120,6 +120,18 @@ def maybe_handle_tools(db: Session, user: User, message: str) -> str | None:
         create_reminder(db, user, message, due)
         return "Got it — I’ll remind you in about an hour."
 
+    # EMAIL WEATHER
+    if ("email" in lower or "send" in lower) and ("weather" in lower or "forecast" in lower or "temperature" in lower):
+        weather = get_weather_summary()
+        send_email(to_email=user.email, subject="Your Weather Update", body=weather)
+        return f"I’ve emailed you the weather update:\n\n{weather}"
+
+    # EMAIL NEWS
+    if ("email" in lower or "send" in lower) and ("news" in lower or "headlines" in lower):
+        news = get_news_headlines()
+        send_email(to_email=user.email, subject="Today’s News Headlines", body=news)
+        return f"I’ve emailed you the headlines:\n\n{news}"
+
     # EMAIL
     if "email me" in lower or "send me" in lower:
         send_email(
