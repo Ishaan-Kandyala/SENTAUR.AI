@@ -13,6 +13,7 @@ python-multipart
 PyJWT
 pydantic
 sqlalchemy
+psycopg2-binary
 authlib
 httpx
 itsdangerous
