@@ -56,6 +56,22 @@ async function login() {
     }
 }
 
+/* LOAD HISTORY */
+async function loadHistory() {
+    if (!getToken()) return;
+    const res = await fetch(API + "/history", {
+        headers: { "Authorization": "Bearer " + getToken() }
+    });
+    if (!res.ok) return;
+    const turns = await res.json();
+    turns.forEach(t => {
+        addMessage("user", t.content);
+        addMessage("bot", t.bot);
+    });
+}
+
+if (document.getElementById("chatbox")) loadHistory();
+
 /* CHAT */
 async function sendMessage() {
     const msgInput = document.getElementById("msg");

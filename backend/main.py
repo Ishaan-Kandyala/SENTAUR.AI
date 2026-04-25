@@ -58,6 +58,20 @@ def chat(req: ChatIn, db: Session = Depends(get_db), user=Depends(get_current_us
     answer = chat_with_centaur(db, user, req.message)
     return ChatOut(response=answer)
 
+# History endpoint
+from .models import ConversationTurn
+
+@app.get("/history")
+def get_history(db: Session = Depends(get_db), user=Depends(get_current_user)):
+    turns = (
+        db.query(ConversationTurn)
+        .filter(ConversationTurn.user_id == user.id)
+        .order_by(ConversationTurn.created_at.asc())
+        .limit(50)
+        .all()
+    )
+    return [{"role": "user", "content": t.user_message, "bot": t.bot_message} for t in turns]
+
 # Reminder scheduler job
 def reminder_job():
     db = SessionLocal()
